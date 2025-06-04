@@ -1,0 +1,73 @@
+---Data Definition Language
+
+CREATE TABLE supermarket.transactions(
+  id STRING,
+  timestamp DATETIME,
+  quantity INT64,
+  product_id STRING,
+  product_name STRING,
+  unit_price FLOAT64,
+  total_amount FLOAT64,
+  store STRING,
+  payment_method STRING,
+  customer_id STRING,
+  customer_type STRING);
+
+---Examine Data
+
+  SELECT *
+  FROM supermarket.transactions
+  LIMIT 100;
+
+---Answers for Question 1 and 2
+-----Across locations, how many apples were purchased in cash?
+-----How much total cash was spent on these apples?
+
+SELECT
+  customer_id,
+	product_name,
+	store,
+	payment_method,
+  SUM(quantity) AS total_apple,
+  SUM(total_amount) AS total_cash,
+FROM 
+	supermarket.transactions
+WHERE
+	product_name IN ('apple') AND
+	payment_method IN ('cash')
+GROUP BY
+  customer_id,
+  product_name,
+  store,
+  payment_method
+ORDER BY
+  SUM(quantity) DESC,
+  SUM(total_amount) DESC
+;
+
+----Answer for Question 3
+-----Across all payment methods, how much money was spent at the Bakershire store location by non-member customers?
+
+SELECT
+  customer_id,
+  product_name,
+  quantity,
+  store,
+  customer_type,
+  SUM(total_amount) AS total,
+FROM 
+  supermarket.transactions
+WHERE
+  store = 'Bakershire' AND
+  customer_type = 'non-member'
+GROUP BY
+  customer_id,
+  product_name,
+  quantity,
+  store,
+  customer_type
+ORDER BY
+  SUM(total_amount) DESC
+;
+
+
